@@ -6,7 +6,7 @@ import Dropzone from '../components/Dropzone';
 import { STEP_TYPES, executePipeline } from '../../lib/engine/pipeline';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-const anime = require('animejs');
+
 
 export default function AutomationPage() {
     const [pipelineSteps, setPipelineSteps] = useState([]);
@@ -21,13 +21,17 @@ export default function AutomationPage() {
     // Animate steps on add
     useEffect(() => {
         if (pipelineSteps.length > 0) {
-            anime({
-                targets: '.pipeline-step',
-                opacity: [0, 1],
-                translateX: [-20, 0],
-                delay: anime.stagger(80),
-                duration: 400,
-                easing: 'easeOutQuad'
+            import('animejs').then(mod => {
+                const anime = mod.animate || mod.default || mod;
+                const stagger = mod.stagger || anime.stagger || (() => 0);
+                anime({
+                    targets: '.pipeline-step',
+                    opacity: [0, 1],
+                    translateX: [-20, 0],
+                    delay: stagger(80),
+                    duration: 400,
+                    easing: 'easeOutQuad'
+                });
             });
         }
     }, [pipelineSteps.length]);

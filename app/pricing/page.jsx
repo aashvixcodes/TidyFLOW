@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FAQ from '../components/FAQ';
-const anime = require('animejs');
+
 
 const checkSvg = (
     <svg viewBox="0 0 20 20" fill="currentColor">
@@ -21,13 +21,17 @@ const FAQ_ITEMS = [
 export default function PricingPage() {
 
     useEffect(() => {
-        anime({
-            targets: '.pricing-card',
-            opacity: [0, 1],
-            translateY: [40, 0],
-            delay: anime.stagger(150),
-            duration: 800,
-            easing: 'easeOutQuad',
+        import('animejs').then(mod => {
+            const anime = mod.animate || mod.default || mod;
+            const stagger = mod.stagger || anime.stagger || (() => 0);
+            anime({
+                targets: '.pricing-card',
+                opacity: [0, 1],
+                translateY: [40, 0],
+                delay: stagger(150),
+                duration: 800,
+                easing: 'easeOutQuad',
+            });
         });
     }, []);
 

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-const anime = require('animejs');
+
 import Link from 'next/link';
 
 const TOOLS = [
@@ -50,13 +50,17 @@ export default function ToolsPage() {
     });
 
     useEffect(() => {
-        anime({
-            targets: '.tool-card',
-            opacity: [0, 1],
-            translateY: [20, 0],
-            delay: anime.stagger(30),
-            duration: 500,
-            easing: 'easeOutQuad'
+        import('animejs').then(mod => {
+            const anime = mod.animate || mod.default || mod;
+            const stagger = mod.stagger || anime.stagger || (() => 0);
+            anime({
+                targets: '.tool-card',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                delay: stagger(30),
+                duration: 500,
+                easing: 'easeOutQuad'
+            });
         });
     }, [activeFilter, searchQuery]);
 

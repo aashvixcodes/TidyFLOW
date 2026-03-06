@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-const anime = require('animejs');
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -10,145 +9,99 @@ export default function Home() {
     const featuresGridRef = useRef(null);
 
     useEffect(() => {
-        // 1. Hero particles
-        const container = document.getElementById('hero-particles');
-        if (container && container.children.length === 0) {
-            for (let i = 0; i < 30; i++) {
-                const p = document.createElement('div');
-                p.className = 'hero-particle';
-                const size = Math.random() * 6 + 2;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                container.appendChild(p);
-            }
-            anime({
-                targets: '.hero-particle',
-                opacity: [
-                    { value: 0.6, duration: 1500 },
-                    { value: 0, duration: 1500 },
-                ],
-                translateY: { value: () => anime.random(-80, 80), duration: 3000 },
-                translateX: { value: () => anime.random(-60, 60), duration: 3000 },
-                scale: [0.5, 1.2],
-                easing: 'easeInOutQuad',
-                duration: () => anime.random(3000, 6000),
-                delay: () => anime.random(0, 3000),
-                loop: true,
-                direction: 'alternate',
-            });
-        }
+        import('animejs').then(mod => {
+            const anime = mod.animate || mod.default || mod;
 
-        // 2. Hero entrance sequence
-        const tl = anime.timeline({ easing: 'easeOutExpo' });
-        tl.add({
-            targets: '#hero-badge',
-            opacity: [0, 1],
-            translateY: [20, 0],
-            duration: 800,
-        })
-            .add({
-                targets: '#hero-title',
-                opacity: [0, 1],
-                translateY: [40, 0],
-                duration: 1000,
-            }, '-=500')
-            .add({
-                targets: '#hero-subtitle',
-                opacity: [0, 1],
-                translateY: [30, 0],
-                duration: 800,
-            }, '-=600')
-            .add({
-                targets: '#hero-actions',
-                opacity: [0, 1],
-                translateY: [25, 0],
-                duration: 800,
-            }, '-=500');
-
-        // 3. Counter animation function
-        const animateCounters = () => {
-            const counters = [
-                { target: '#stat-tools', value: 193 },
-                { target: '#stat-processed', value: 47 },
-                { target: '#stat-savings', value: 72 },
-            ];
-
-            counters.forEach(c => {
-                const el = document.querySelector(c.target);
-                if (!el) return;
-                const obj = { val: 0 };
+            // 1. Hero particles
+            const container = document.getElementById('hero-particles');
+            if (container && container.children.length === 0) {
+                for (let i = 0; i < 30; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'hero-particle';
+                    const size = Math.random() * 6 + 2;
+                    p.style.width = size + 'px';
+                    p.style.height = size + 'px';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.top = Math.random() * 100 + '%';
+                    container.appendChild(p);
+                }
                 anime({
-                    targets: obj,
-                    val: c.value,
-                    round: 1,
-                    easing: 'easeInOutExpo',
-                    duration: 2000,
-                    delay: 600,
-                    update: () => { el.textContent = Math.round(obj.val); }
+                    targets: '.hero-particle',
+                    opacity: [{ value: 0.6, duration: 1500 }, { value: 0, duration: 1500 }],
+                    translateY: { value: () => (Math.random() - 0.5) * 160, duration: 3000 },
+                    translateX: { value: () => (Math.random() - 0.5) * 120, duration: 3000 },
+                    scale: [0.5, 1.2],
+                    easing: 'easeInOutQuad',
+                    duration: () => Math.random() * 3000 + 3000,
+                    delay: () => Math.random() * 3000,
+                    loop: true,
+                    direction: 'alternate',
                 });
-            });
+            }
 
-            anime({
-                targets: '#stat-privacy',
-                opacity: [0, 1],
-                scale: [0.5, 1],
-                duration: 1200,
-                delay: 1200,
-                easing: 'easeOutElastic(1, .5)',
-            });
-        };
+            // 2. Hero entrance sequence
+            const tl = anime.timeline ? anime.timeline({ easing: 'easeOutExpo' }) : null;
+            if (tl) {
+                tl.add({ targets: '#hero-badge', opacity: [0, 1], translateY: [20, 0], duration: 800 })
+                    .add({ targets: '#hero-title', opacity: [0, 1], translateY: [40, 0], duration: 1000 }, '-=500')
+                    .add({ targets: '#hero-subtitle', opacity: [0, 1], translateY: [30, 0], duration: 800 }, '-=600')
+                    .add({ targets: '#hero-actions', opacity: [0, 1], translateY: [25, 0], duration: 800 }, '-=500');
+            } else {
+                ['#hero-badge', '#hero-title', '#hero-subtitle', '#hero-actions'].forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) el.style.opacity = '1';
+                });
+            }
 
-        // 4. Scroll reveals for .animate-in
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
-
-        // Stats row intersection
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.3 });
-        if (statsRowRef.current) statsObserver.observe(statsRowRef.current);
-
-        // Glow line pulse
-        anime({
-            targets: '#glow-line',
-            opacity: [0.1, 0.5, 0.1],
-            easing: 'easeInOutSine',
-            duration: 3000,
-            loop: true,
-        });
-
-        // Feature cards stagger
-        const featureObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
+            // 3. Counter animation function
+            const animateCounters = () => {
+                const counters = [
+                    { target: '#stat-tools', value: 193 },
+                    { target: '#stat-processed', value: 47 },
+                    { target: '#stat-savings', value: 72 },
+                ];
+                counters.forEach(c => {
+                    const el = document.querySelector(c.target);
+                    if (!el) return;
+                    const obj = { val: 0 };
                     anime({
-                        targets: '.feature-card',
-                        opacity: [0, 1],
-                        translateY: [30, 0],
-                        delay: anime.stagger(100),
-                        duration: 600,
-                        easing: 'easeOutQuad',
+                        targets: obj, val: c.value, round: 1,
+                        easing: 'easeInOutExpo', duration: 2000, delay: 600,
+                        update: () => { el.textContent = Math.round(obj.val); }
                     });
-                    featureObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
-        if (featuresGridRef.current) featureObserver.observe(featuresGridRef.current);
+                });
+                anime({ targets: '#stat-privacy', opacity: [0, 1], scale: [0.5, 1], duration: 1200, delay: 1200, easing: 'easeOutElastic(1, .5)' });
+            };
+
+            // 4. Scroll reveals
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+                });
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+            // Stats row
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) { animateCounters(); statsObserver.unobserve(entry.target); } });
+            }, { threshold: 0.3 });
+            if (statsRowRef.current) statsObserver.observe(statsRowRef.current);
+
+            // Glow line pulse
+            anime({ targets: '#glow-line', opacity: [0.1, 0.5, 0.1], easing: 'easeInOutSine', duration: 3000, loop: true });
+
+            // Feature cards stagger
+            const stagger = anime.stagger || (() => 0);
+            const featureObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({ targets: '.feature-card', opacity: [0, 1], translateY: [30, 0], delay: stagger(100), duration: 600, easing: 'easeOutQuad' });
+                        featureObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+            if (featuresGridRef.current) featureObserver.observe(featuresGridRef.current);
+        });
 
         // Scroll to top button logic
         const handleScroll = () => {
@@ -156,7 +109,6 @@ export default function Home() {
             if (scrollBtn) scrollBtn.classList.toggle('visible', window.scrollY > 400);
         };
         window.addEventListener('scroll', handleScroll);
-
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 

@@ -1,4 +1,8 @@
 {
+  "/automation/page": "app/automation/page.js",
   "/compress/page": "app/compress/page.js",
-  "/page": "app/page.js"
+  "/convert/page": "app/convert/page.js",
+  "/page": "app/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/tools/page": "app/tools/page.js"
 }
