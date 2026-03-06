@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/presets/route": "app/api/presets/route.js",
+  "/api/track/route": "app/api/track/route.js",
+  "/automation/page": "app/automation/page.js",
+  "/compress/page": "app/compress/page.js",
+  "/convert/page": "app/convert/page.js",
+  "/page": "app/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/tools/page": "app/tools/page.js"
+}

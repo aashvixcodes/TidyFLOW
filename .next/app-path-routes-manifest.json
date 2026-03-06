@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/presets/route": "/api/presets",
+  "/api/track/route": "/api/track",
+  "/automation/page": "/automation",
+  "/compress/page": "/compress",
+  "/convert/page": "/convert",
+  "/page": "/",
+  "/pricing/page": "/pricing",
+  "/tools/page": "/tools"
+}
